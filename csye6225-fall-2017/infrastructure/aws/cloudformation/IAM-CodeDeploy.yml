@@ -1,0 +1,185 @@
+#Yogita Jain, jain.yo@husky.neu.edu, 001643815
+#Rohan Magare, magare.r@husky.neu.edu, 001231457
+#Pratiksha Shetty, shetty.pr@husky.neu.edu, 001643697
+#Ritesh Gupta, gupta.rite@husky.neu.edu, 001280361
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation Template to create IAM Roles, Policies and Profile
+
+Parameters:
+  KeyName:
+    Description: Key pair name
+    Type: "String"
+  Ec2RoleName:
+    Description: EC2 role name
+    Type: "String"
+  CodeDepolyRoleName:
+    Description: Code Deploy name
+    Type: "String"
+  PolicyDeployEC2S3Name:
+    Description: Code Deploy from EC2 S3
+    Type: "String"
+  PolicyTravisUploadS3Name:
+    Description: Travis Upload to S3
+    Type: "String"
+  PolicyTravisCodeDeployName:
+    Description: Travis-Code-Deploy-new
+    Type: "String"
+  WebApplicationName:
+    Description: Name of the code deploy application
+    Type: "String"
+  TravisUserName:
+    Description: Travis user name
+    Type: "String"
+  CloudWatch:
+    Description: Travis user name
+    Type: "String"
+
+
+Resources:
+  Ec2Role:
+    Type: "AWS::IAM::Role"
+    Properties:
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        -
+          PolicyName: !Ref CloudWatch
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'logs:DescribeLogStreams'
+                Resource:
+                  - 'arn:aws:logs:*:*:*'
+      RoleName: !Ref Ec2RoleName
+
+  CodeDepolyEc2S3Policies:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: !Ref PolicyDeployEC2S3Name
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:Get*'
+              - 's3:List*'
+            Effect: Allow
+            Resource: '*'
+      Roles:
+        -
+          Ref: "Ec2Role"
+
+  Ec2InstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+        -
+          Ref: "Ec2Role"
+
+  CodeDeployRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "codedeploy.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      RoleName: !Ref CodeDepolyRoleName
+
+  RolePolicyUploadToS3:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Description: "new CF policy"
+      ManagedPolicyName: !Ref PolicyTravisUploadS3Name
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:PutObject'
+            Resource:
+              - '*'
+      Users:
+        - !Ref TravisUserName
+
+  travisCiPolicy1:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Description: "Trying to create a CF policy"
+      ManagedPolicyName: !Ref PolicyTravisCodeDeployName
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'codedeploy:RegisterApplicationRevision'
+              - 'codedeploy:GetApplicationRevision'
+            Resource:
+              - !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:application:${WebApplicationName}'
+          - Effect: Allow
+            Action:
+              - 'codedeploy:CreateDeployment'
+              - 'codedeploy:GetDeployment'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 'codedeploy:GetDeploymentConfig'
+            Resource:
+              - !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentconfig:CodeDeployDefault.OneAtATime'
+              - !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentconfig:CodeDeployDefault.HalfAtATime'
+              - !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentconfig:CodeDeployDefault.AllAtOnce'
+      Users:
+        - !Ref TravisUserName
+
+  CloudWatchPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: !Ref CloudWatch
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - "logs:CreateLogGroup"
+              - "logs:CreateLogStream"
+              - "logs:PutLogEvents"
+              - "logs:DescribeLogStreams"
+            Effect: Allow
+            Resource:
+              - "arn:aws:logs:*:*:*"
+      Roles:
+        -
+          Ref: "Ec2Role"
+
+
+Outputs:
+  StackEc2InstanceRole:
+    Description: IAM profile for EC2 role
+    Value: !Ref Ec2InstanceProfile
+    Export:
+      Name: !Sub "${AWS::StackName}-Ec2InstanceRole"

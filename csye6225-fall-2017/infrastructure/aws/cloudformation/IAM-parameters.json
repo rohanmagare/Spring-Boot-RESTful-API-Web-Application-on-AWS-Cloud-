@@ -1,0 +1,48 @@
+[
+    {
+       "ParameterKey": "KeyName",
+       "ParameterValue": "MyKeyPair",
+       "UsePreviousValue": true
+     },
+       {
+         "ParameterKey": "Ec2RoleName",
+         "ParameterValue": "CodeDepolyEC2ServiceRoleNew",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "CodeDepolyRoleName",
+         "ParameterValue": "CodeDepolyServiceRoleNew",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "PolicyDeployEC2S3Name",
+         "ParameterValue": "CodeDeploy-EC2-S3new",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "PolicyTravisUploadS3Name",
+         "ParameterValue": "Travis-Upload-S3-new",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "PolicyTravisCodeDeployName",
+         "ParameterValue": "Travis-Code-Deploy-new",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "WebApplicationName",
+         "ParameterValue": "WebApplication",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "TravisUserName",
+         "ParameterValue": "travis_ci",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "CloudWatch",
+         "ParameterValue": "CloudLogs",
+         "UsePreviousValue": true
+       }
+
+]

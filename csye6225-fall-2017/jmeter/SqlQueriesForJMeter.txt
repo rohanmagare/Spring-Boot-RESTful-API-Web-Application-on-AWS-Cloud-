@@ -1,0 +1,6 @@
+mysql --user=root --password csye6225  -B -e "select * from user;" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > /home/ritesh/for_create_tasks.csv
+
+mysql --user=root --password csye6225  -B -e "select a.email_id,a.password,a.user_id,b.task_id from user a join task b on a.user_id=b.user_id ;" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > /home/ritesh/for_update_task.csv
+
+
+mysql --user=root --password csye6225  -B -e "select a.email_id,a.password,a.user_id,b.task_id,c.file_id from user a join task b join media_file c on a.user_id=b.user_id and b.task_id=c.task_id ;" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > /home/ritesh/delete_attachments.csv

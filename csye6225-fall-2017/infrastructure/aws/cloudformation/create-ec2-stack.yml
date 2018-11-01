@@ -1,0 +1,411 @@
+#Yogita Jain, jain.yo@husky.neu.edu, 001643815
+#Rohan Magare, magare.r@husky.neu.edu, 001231457
+#Pratiksha Shetty, shetty.pr@husky.neu.edu, 001643697
+#Ritesh Gupta, gupta.rite@husky.neu.edu, 001280361
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation Template to create an EC2 instance
+
+Parameters:
+  KeyName:
+    Description: Key pair name
+    Type: "String"
+  InstanceType:
+    Description: Instance type to use
+    Type: "String"
+    AllowedValues:
+      - t2.micro
+      - m1.small
+      - m1.large
+    Description: Enter t2.micro, m1.small or m1.large
+  Id:
+    Description: Image id of the AMI
+    Type: AWS::EC2::Image::Id
+  VpcId:
+    Description: Vpc id of the AMI
+    Type: "String"
+  SecurityGroupName:
+    Description: Security Group name
+    Type: "String"
+  HostedZoneId:
+    Description: Hosted zone id
+    Type: "String"
+  DomainName:
+    Description: domain name to create in the RecordSet
+    Type: "String"
+  DeviceName:
+    Description: device name to create in the RecordSet
+    Type: "String"
+  VolumeSize:
+    Description: volume size to create in the RecordSet
+    Type: "String"
+  VolumeType:
+    Description: volume type to create in the RecordSet
+    Type: "String"
+  DBSecurityGroup:
+    Description: Security Group name
+    Type: "String"
+  DBName:
+    Description: Name of the RDS database
+    Type: "String"
+  DBAllocatedStorage:
+    Description: DBAllocatedStorage for RDS instance
+    Type: "String"
+  DBInstanceClass:
+    Description: Instance class type for the RDS database
+    Type: "String"
+  DBUser:
+    Description: database user name for RDS instance
+    Type: "String"
+  DBPassword:
+    Description: database password of the RDS database
+    Type: "String"
+  DatabaseType:
+    Description: "Type of database: MySQL, Sql"
+    Type: "String"
+  DatabaseVersion:
+    Description: Version of database engine
+    Type: "String"
+  DBStorageType:
+    Description: "Type of Storage gp2 or io1"
+    Type: "String"
+  InstanceIdentifier:
+    Description: Name of instance identifier
+    Type: "String"
+  SubnetId1:
+    Description: Subnet Id for us-east-1c
+    Type: "String"
+  SubnetId2:
+    Description: Subnet Id for us-east-1b
+    Type: "String"
+  DynamodbTableName:
+    Description: Name of the Dynamodb
+    Type: "String"
+  ReadCU:
+    Description: Read capacity units for Dynamodb
+    Type: "String"
+  WriteCU:
+    Description: Write capacity units for Dynamodb
+    Type: "String"
+  ColumnName:
+    Description: PrimaryKey Name for DB
+    Type: String
+    AllowedPattern: '[a-zA-Z0-9]*'
+    MinLength: '1'
+    MaxLength: '2048'
+    ConstraintDescription: "only alphanumberic characters"
+  IdDataType:
+    Description: Id PrimaryKey Data Type
+    Type: String
+    Default: S
+    AllowedPattern: '[S|N]'
+    MinLength: '1'
+    MaxLength: '1'
+    ConstraintDescription: "must be either S or N"
+  WebserverPort:
+    Description: TCP server port 80 Instance
+    Type: "String"
+  HttpPort:
+    Description: Http port for EC2 Instance
+    Type: "String"
+  HttpsPort:
+    Description: Https port for EC2 Instance
+    Type: "String"
+  DBIngressPort:
+    Description: MySQL db Ingress port for RDS Instance
+    Type: "String"
+  RoleStack:
+    Description: Name of the active stack that has roles created
+    Type: "String"
+  EC2TagName:
+    Description: Name of the active stack that has roles created
+    Type: "String"
+  EC2TagValue:
+    Description: Name of the active stack that has roles created
+    Type: "String"
+  DNSRecordType:
+    Description: Name of the active stack that has roles created
+    Type: "String"
+  DNSTtl:
+    Description: Name of the active stack that has roles created
+    Type: "String"
+  IAMAccessKey:
+    Description: Name of the active stack that has roles created
+    Type: "String"
+  IAMSecretKey:
+    Description: Name of the active stack that has roles created
+    Type: "String"
+
+Resources:
+# VPC Security Group for EC2 instance
+  WebServerSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName:
+        Ref: SecurityGroupName
+      GroupDescription: 'Enable HTTP access via port 80, SSH access via port 22'
+      VpcId:
+        Ref: VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8080'
+          ToPort: '8080'
+          CidrIp: 0.0.0.0/0
+
+
+# VPC Security Group for RDS instance
+  RDSSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: !Ref DBSecurityGroup
+      VpcId: !Ref VpcId
+      GroupDescription: Base Security Group
+# Ingress rule for RDS instance
+  RDSIngressSecurity:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Properties:
+      IpProtocol: tcp
+      FromPort: !Ref DBIngressPort
+      ToPort: !Ref DBIngressPort
+      SourceSecurityGroupId: !Ref WebServerSecurityGroup
+      GroupId: !Ref RDSSecurityGroup
+# Subnet group for RDS instance
+  DBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "New subnet for RDS instance"
+      SubnetIds:
+        - !Ref SubnetId1
+        - !Ref SubnetId2
+# RDS instance
+  RDSInstance:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBName: !Ref DBName
+      AllocatedStorage: !Ref DBAllocatedStorage
+      DBInstanceClass: !Ref DBInstanceClass
+      Engine: !Ref DatabaseType
+      EngineVersion: !Ref DatabaseVersion
+      PubliclyAccessible: false
+      StorageType: !Ref DBStorageType
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DBInstanceIdentifier: !Ref InstanceIdentifier
+      MasterUsername: !Ref DBUser
+      MasterUserPassword: !Ref DBPassword
+      MultiAZ: false
+      VPCSecurityGroups:
+      - Ref: RDSSecurityGroup
+      Tags:
+        -
+          Key: "Name"
+          Value: "RDS MySQL Database"
+
+  EC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: !Ref KeyName
+      IamInstanceProfile:
+        Fn::ImportValue:
+          !Sub "${RoleStack}-Ec2InstanceRole"
+      ImageId:
+        Ref: Id
+      InstanceType:
+        Ref: InstanceType
+      DisableApiTermination: true
+      SecurityGroupIds:
+        - !GetAtt
+          - WebServerSecurityGroup
+          - GroupId
+      SubnetId:
+        Ref: SubnetId1
+      Tags:
+        -
+          Key: !Ref EC2TagName
+          Value: !Ref EC2TagValue
+      BlockDeviceMappings:
+        -
+          DeviceName:
+            Ref: DeviceName
+          Ebs:
+            VolumeType:
+              Ref: VolumeType
+            VolumeSize:
+              Ref: VolumeSize
+      UserData:
+        Fn::Base64: !Sub |
+            #! /bin/bash -xe
+            apt-get update
+            echo Y | apt-get install default-jre
+            echo Y | apt-get install default-jdk
+
+            sed -i '$ a JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"' /etc/environment
+            source /etc/environment
+            wait
+            sleep 3
+            groupadd tomcat
+            useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+
+            cd /opt
+            curl -O http://apache.mirrors.tds.net/tomcat/tomcat-8/v8.5.23/bin/apache-tomcat-8.5.23.tar.gz
+            tar -xvf apache-tomcat-8.5.23.tar.gz
+            mv apache-tomcat-8.5.23 tomcat
+
+            sleep 3
+
+            chgrp -R tomcat /opt/tomcat
+            chown -R tomcat /opt/tomcat
+            chmod -R 755 /opt/tomcat
+
+            echo "[Unit]
+            Description=Apache Tomcat Web Server
+            After=network.target
+
+            [Service]
+            Type=forking
+
+            Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
+            Environment=CATALINA_HOME=/opt/tomcat
+            Environment=CATALINA_BASE=/opt/tomcat
+            Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+
+            ExecStart=/opt/tomcat/bin/startup.sh
+            ExecStop=/opt/tomcat/bin/shutdown.sh
+
+            User=tomcat
+            Group=tomcat
+            UMask=0007
+            RestartSec=15
+            Restart=always
+
+            [Install]
+            WantedBy=multi-user.target" > /etc/systemd/system/tomcat.service
+
+            systemctl daemon-reload
+            sleep 2
+            systemctl start tomcat
+            sleep 2
+            systemctl enable tomcat
+            sudo ufw allow 8080
+
+            sleep 10
+            wait
+
+            apt-get update
+            echo Y | apt-get install ruby
+            apt-get install wget
+            cd /home/ubuntu
+            wget https://aws-codedeploy-us-east-2.s3.amazonaws.com/latest/install
+            chmod -R 777 /home/ubuntu/install
+            wait
+            sleep 3
+            ./install auto
+            service codedeploy-agent start
+            sleep 10
+
+            echo '#!/bin/sh' > /opt/tomcat/bin/setenv.sh
+            echo 'export JAVA_OPTS="$JAVA_OPTS -Dspring.profiles.active=aws"' >> /opt/tomcat/bin/setenv.sh
+            echo 'export JAVA_OPTS="$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://${RDSInstance.Endpoint.Address}:3306/csye6225"' >> /opt/tomcat/bin/setenv.sh
+            echo 'export JAVA_OPTS="$JAVA_OPTS -Dspring.datasource.username=${DBUser}"' >> /opt/tomcat/bin/setenv.sh
+            echo 'export JAVA_OPTS="$JAVA_OPTS -Dspring.datasource.password=${DBPassword}"' >> /opt/tomcat/bin/setenv.sh
+            echo 'export JAVA_OPTS="$JAVA_OPTS -Daws.AWS_ACCESS_KEY_ID=${IAMAccessKey}"' >> /opt/tomcat/bin/setenv.sh
+            echo 'export JAVA_OPTS="$JAVA_OPTS -Daws.AWS_SERECT_ACCESS_KEY=${IAMSecretKey}"' >> /opt/tomcat/bin/setenv.sh
+            echo 'export JAVA_OPTS="$JAVA_OPTS -Daws.S3_BUCKET_NAME=${DomainName}.csye6225.com"' >> /opt/tomcat/bin/setenv.sh
+            echo 'export JAVA_OPTS="$JAVA_OPTS -Daws.AWS_REGION=${AWS::Region}"' >> /opt/tomcat/bin/setenv.sh
+
+            sleep 3
+            chmod -R 755 /opt/tomcat/bin/setenv.sh
+            chown tomcat:tomcat /opt/tomcat/bin/setenv.sh
+            source /opt/tomcat/bin/setenv.sh
+            sleep 10
+            systemctl restart tomcat
+
+            apt-get update -y
+            apt-get install python -y
+
+            curl https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
+            chmod +x ./awslogs-agent-setup.py
+
+            echo "[general]
+            state_file = /var/awslogs/state/agent-state
+
+            [/opt/log/syslog]
+            file = /opt/log/syslog
+            log_group_name = /opt/log/syslog
+            log_stream_name = {instance_id}sys.logs
+            datetime_format = %b %d %H:%M:%S" >> /home/ubuntu/awslogs.conf
+
+            sleep 3
+            sudo ./awslogs-agent-setup.py -n -r us-east-1 -c awslogs.conf
+
+            echo "[Unit]
+            Description=Service for CloudWatch Logs agent
+            After=rc-local.service
+
+            [Service]
+            Type=simple
+            Restart=always
+            KillMode=process
+            TimeoutSec=infinity
+            PIDFile=/var/awslogs/state/awslogs.pid
+            ExecStart=/var/awslogs/bin/awslogs-agent-launcher.sh --start --background --pidfile $PIDFILE --user awslogs --chuid awslogs &amp;
+
+            [Install]
+            WantedBy=multi-user.target" > /etc/systemd/system/awslogs.service
+
+            rm -rf /home/ubuntu/awslogs.conf
+
+            systemctl start awslogs.service
+            systemctl stop awslogs.service
+
+# S3 bucket
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join ["." , [!Ref DomainName, "csye6225.com"]]
+      AccessControl: Private
+
+# DynamoDB Table
+  DynamoDBTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: !Ref ColumnName
+          AttributeType: !Ref IdDataType
+      KeySchema:
+        -
+          AttributeName: "Id"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref ReadCU
+        WriteCapacityUnits: !Ref WriteCU
+      TableName: !Ref DynamodbTableName
+
+  myDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId:
+        Ref: HostedZoneId
+      Name:
+        Ref: DomainName
+      Type: !Ref DNSRecordType
+      TTL: !Ref DNSTtl
+      ResourceRecords:
+      - !GetAtt EC2Instance.PublicIp
+
+Outputs:
+  BucketName:
+    Value: !Ref 'S3Bucket'
+    Description: Name of the Amazon S3 bucket

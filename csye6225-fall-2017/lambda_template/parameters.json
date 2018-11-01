@@ -1,0 +1,57 @@
+[
+      {
+        "ParameterKey": "LambdaRole",
+        "ParameterValue": "LambdaExeRole",
+        "UsePreviousValue": true
+        },
+       {
+         "ParameterKey": "S3BucketName",
+         "ParameterValue": "ec2.csye6225-fall2017-jainyo.me.csye6225.com",
+         "UsePreviousValue": true
+       },
+        {
+           "ParameterKey": "S3FileName",
+           "ParameterValue": "index.js.zip",
+           "UsePreviousValue": true
+        },
+       {
+             "ParameterKey": "LambdaFunctionName",
+             "ParameterValue": "LambdaFunction",
+             "UsePreviousValue": true
+        },
+      {
+           "ParameterKey": "SNSTopicName",
+           "ParameterValue": "SNScsye6225",
+           "UsePreviousValue": true
+       },
+       {
+            "ParameterKey": "SNSDisplayName",
+            "ParameterValue": "SNSTopic",
+            "UsePreviousValue": true
+        },
+        {
+         "ParameterKey": "DynamodbTableName",
+         "ParameterValue": "csye6225Lambda",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "ColumnName",
+         "ParameterValue": "emailId",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "IdDataType",
+         "ParameterValue": "S",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "ReadCU",
+         "ParameterValue": "5",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "WriteCU",
+         "ParameterValue": "5",
+         "UsePreviousValue": true
+       }
+]

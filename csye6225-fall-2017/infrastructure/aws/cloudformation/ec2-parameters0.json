@@ -1,0 +1,194 @@
+[
+    {
+       "ParameterKey": "KeyName",
+       "ParameterValue": "MyKeyPair",
+       "UsePreviousValue": true
+     },
+     {
+          "ParameterKey": "InstanceType",
+          "ParameterValue": "t2.micro",
+          "UsePreviousValue": true
+      },
+      {
+           "ParameterKey": "Id",
+           "ParameterValue": "ami-cd0f5cb6",
+           "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "VpcId",
+         "ParameterValue": "vpc-a9f6ffd0",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "SecurityGroupName",
+         "ParameterValue": "csye6225-webapp1",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DBSecurityGroup",
+         "ParameterValue": "csye6225-rds1",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "HostedZoneId",
+         "ParameterValue": "ZV0SP3ADUV1M6",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DomainName",
+         "ParameterValue": "ec2.csye6225-fall2017-jainyo.me",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DeviceName",
+         "ParameterValue": "/dev/sda1",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "VolumeSize",
+         "ParameterValue": "16",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "VolumeType",
+         "ParameterValue": "gp2",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DBName",
+         "ParameterValue": "csye6225_1",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DatabaseType",
+         "ParameterValue": "MySQL",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DatabaseVersion",
+         "ParameterValue": "5.6.35",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DBStorageType",
+         "ParameterValue": "gp2",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "InstanceIdentifier",
+         "ParameterValue": "csye6225-fall2017",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DBAllocatedStorage",
+         "ParameterValue": "10",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DBInstanceClass",
+         "ParameterValue": "db.t2.medium",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DBUser",
+         "ParameterValue": "csye6225master",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DBPassword",
+         "ParameterValue": "csye6225password",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "SubnetId1",
+         "ParameterValue": "subnet-b833dcf3",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "SubnetId2",
+         "ParameterValue": "subnet-8dd7f9a1",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DynamodbTableName",
+         "ParameterValue": "csye6225_1",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "ColumnName",
+         "ParameterValue": "Id",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "IdDataType",
+         "ParameterValue": "S",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "ReadCU",
+         "ParameterValue": "5",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "WriteCU",
+         "ParameterValue": "5",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "WebserverPort",
+         "ParameterValue": "80",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "HttpPort",
+         "ParameterValue": "22",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "HttpsPort",
+         "ParameterValue": "443",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DBIngressPort",
+         "ParameterValue": "3306",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "EC2TagName",
+         "ParameterValue": "name",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "EC2TagValue",
+         "ParameterValue": "csye6225",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "RoleStack",
+         "ParameterValue": "role",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DNSRecordType",
+         "ParameterValue": "A",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "DNSTtl",
+         "ParameterValue": "60",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "IAMAccessKey",
+         "ParameterValue": "",
+         "UsePreviousValue": true
+       },
+       {
+         "ParameterKey": "IAMSecretKey",
+         "ParameterValue": "",
+         "UsePreviousValue": true
+       }
+
+
+]

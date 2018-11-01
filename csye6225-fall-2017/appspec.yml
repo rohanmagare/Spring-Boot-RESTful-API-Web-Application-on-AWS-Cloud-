@@ -1,0 +1,27 @@
+version: 0.0
+os: linux
+
+files:
+  - source: ./appspec.yml
+    destination: /home/ubuntu
+  - source: ./restartTomcat.sh
+    destination: /home/ubuntu
+  - source: ./build/libs/ROOT.war
+    destination: /opt/tomcat/webapps
+  - source: ./infrastructure/aws/cloudwatch/awslogs.conf
+    destination: /home/ubuntu
+  - source: ./startCloudWatch.sh
+    destination: /home/ubuntu
+
+permissions:
+  - object: /home/ubuntu/startCloudWatch.sh
+    mode: 777
+
+hooks:
+  AfterInstall:
+   - location: ./restartTomcat.sh
+     timeout: 180
+     runas: ubuntu
+   - location: ./startCloudWatch.sh
+     timeout: 180
+     runas: ubuntu
